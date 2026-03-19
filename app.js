@@ -2,22 +2,31 @@ require("dotenv").config()
 
 const express = require("express")
 const cors = require("cors")
+
 const supabase = require("./supabase")
 
 const app = express()
 
+
+// ===== middleware =====
+
 app.use(cors())
 app.use(express.json())
 
+// IMPORTANT → html serve karega
+app.use(express.static(__dirname))
 
-// ROOT
+
+
+// ================= ROOT =================
 
 app.get("/", (req, res) => {
   res.send("API WORKING")
 })
 
 
-// LOGIN
+
+// ================= LOGIN =================
 
 app.post("/login", async (req, res) => {
 
@@ -34,14 +43,15 @@ app.post("/login", async (req, res) => {
   }
 
   res.json({
-    session: data.session,
-    user: data.user
+    user: data.user,
+    session: data.session
   })
 
 })
 
 
-// SIGNUP
+
+// ================= SIGNUP =================
 
 app.post("/signup", async (req, res) => {
 
@@ -63,7 +73,7 @@ app.post("/signup", async (req, res) => {
 
 
 
-// DASHBOARD
+// ================= DASHBOARD =================
 
 app.get("/dashboard", async (req, res) => {
 
@@ -75,11 +85,13 @@ app.get("/dashboard", async (req, res) => {
       .select("amount")
       .eq("user_id", user_id)
 
+
   const { data: purchase } =
     await supabase
       .from("purchase")
       .select("amount")
       .eq("user_id", user_id)
+
 
   const { data: expense } =
     await supabase
@@ -92,9 +104,11 @@ app.get("/dashboard", async (req, res) => {
   let p = 0
   let e = 0
 
+
   sales?.forEach(i => s += Number(i.amount))
   purchase?.forEach(i => p += Number(i.amount))
   expense?.forEach(i => e += Number(i.amount))
+
 
   res.json({
     salesTotal: s,
@@ -107,7 +121,7 @@ app.get("/dashboard", async (req, res) => {
 
 
 
-// ADD SALE
+// ================= ADD SALE =================
 
 app.post("/add-sale", async (req, res) => {
 
@@ -130,15 +144,22 @@ app.post("/add-sale", async (req, res) => {
 
 
 
-// ADD PURCHASE
+// ================= ADD PURCHASE =================
 
 app.post("/add-purchase", async (req, res) => {
 
   const { amount, user_id } = req.body
 
-  await supabase
-    .from("purchase")
-    .insert([{ amount, user_id }])
+  const { error } =
+    await supabase
+      .from("purchase")
+      .insert([
+        { amount, user_id }
+      ])
+
+  if (error) {
+    return res.status(500).json(error)
+  }
 
   res.json({ ok: true })
 
@@ -146,15 +167,22 @@ app.post("/add-purchase", async (req, res) => {
 
 
 
-// ADD EXPENSE
+// ================= ADD EXPENSE =================
 
 app.post("/add-expense", async (req, res) => {
 
   const { amount, user_id } = req.body
 
-  await supabase
-    .from("expense")
-    .insert([{ amount, user_id }])
+  const { error } =
+    await supabase
+      .from("expense")
+      .insert([
+        { amount, user_id }
+      ])
+
+  if (error) {
+    return res.status(500).json(error)
+  }
 
   res.json({ ok: true })
 
@@ -162,8 +190,10 @@ app.post("/add-expense", async (req, res) => {
 
 
 
+// ================= START =================
+
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT, () => {
-  console.log("Server running")
+  console.log("Server running on " + PORT)
 })
