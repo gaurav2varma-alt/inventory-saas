@@ -1,75 +1,13 @@
-<!DOCTYPE html>
-<html>
-
-<body>
-
 <script>
 
-if(!localStorage.getItem("user_id")){
-    window.location="login.html"
-}
-
-</script>
-
-<h1>Dashboard</h1>
-
-<div id="sales"></div>
-
-<input id="amount">
-<button onclick="addSale()">Add Sale</button>
-
-<script>
-
-const API =
-"https://inventory-saas-0zns.onrender.com"
-
-const user_id =
+const id =
 localStorage.getItem("user_id")
 
-function load(){
+if(!id){
 
-fetch(API+"/dashboard?user_id="+user_id)
-
-.then(r=>r.json())
-
-.then(d=>{
-
-document.getElementById("sales").innerHTML =
-d.salesTotal
-
-})
-
-}
-
-load()
-
-
-function addSale(){
-
-fetch(API+"/add-sale",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-amount:
-document.getElementById("amount").value,
-
-user_id:user_id
-
-})
-
-})
-
-.then(()=>load())
+window.location.href =
+"https://inventory-saas-0zns.onrender.com/login.html"
 
 }
 
 </script>
-
-</body>
-</html>
