@@ -1,277 +1,73 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-
-  <title>Inventory Dashboard</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-
-    body {
-      font-family: Arial;
-      background: #0f172a;
-      color: white;
-      text-align: center;
-    }
-
-    .container {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    .card {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 10px;
-      width: 180px;
-    }
-
-    .form {
-      margin-top: 15px;
-    }
-
-    canvas {
-      max-width: 700px;
-      margin-top: 40px;
-    }
-
-  </style>
-
-</head>
-
-
 <body>
-
-<h1>Inventory Dashboard</h1>
-
-
-<div class="container">
-
-  <div class="card">
-    Sales
-    <div id="sales">0</div>
-  </div>
-
-  <div class="card">
-    Purchase
-    <div id="purchase">0</div>
-  </div>
-
-  <div class="card">
-    Expense
-    <div id="expense">0</div>
-  </div>
-
-  <div class="card">
-    Profit
-    <div id="profit">0</div>
-  </div>
-
-</div>
-
-
-
-<div class="form">
-
-  Sale
-  <input id="saleInput">
-  <button onclick="addSale()">Add</button>
-
-</div>
-
-
-<div class="form">
-
-  Purchase
-  <input id="purchaseInput">
-  <button onclick="addPurchase()">Add</button>
-
-</div>
-
-
-<div class="form">
-
-  Expense
-  <input id="expenseInput">
-  <button onclick="addExpense()">Add</button>
-
-</div>
-
-
-
-<h2>Bar</h2>
-<canvas id="barChart"></canvas>
-
-<h2>Pie</h2>
-<canvas id="pieChart"></canvas>
-
-<h2>Monthly Sales</h2>
-<canvas id="monthChart"></canvas>
-
-
 
 <script>
 
-const API = "https://inventory-saas-0zns.onrender.com"
+if(!localStorage.getItem("user_id")){
+    window.location="login.html"
+}
 
-let barChart
-let pieChart
-let monthChart
+</script>
 
+<h1>Dashboard</h1>
 
+<div id="sales"></div>
 
-function loadDashboard() {
+<input id="amount">
+<button onclick="addSale()">Add Sale</button>
 
-  fetch(API + "/dashboard")
-    .then(r => r.json())
-    .then(data => {
+<script>
 
-      document.getElementById("sales").innerText = data.salesTotal
-      document.getElementById("purchase").innerText = data.purchaseTotal
-      document.getElementById("expense").innerText = data.expenseTotal
-      document.getElementById("profit").innerText = data.profit
+const API =
+"https://inventory-saas-0zns.onrender.com"
 
-      drawCharts(data)
+const user_id =
+localStorage.getItem("user_id")
 
-    })
+function load(){
+
+fetch(API+"/dashboard?user_id="+user_id)
+
+.then(r=>r.json())
+
+.then(d=>{
+
+document.getElementById("sales").innerHTML =
+d.salesTotal
+
+})
 
 }
 
+load()
 
 
-function drawCharts(data) {
+function addSale(){
 
-  if (barChart) barChart.destroy()
-  if (pieChart) pieChart.destroy()
+fetch(API+"/add-sale",{
 
-  const labels = ["Sales","Purchase","Expense","Profit"]
+method:"POST",
 
-  const values = [
-    data.salesTotal,
-    data.purchaseTotal,
-    data.expenseTotal,
-    data.profit
-  ]
+headers:{
+"Content-Type":"application/json"
+},
 
+body:JSON.stringify({
 
-  barChart = new Chart(
-    document.getElementById("barChart"),
-    {
-      type: "bar",
-      data: {
-        labels: labels,
-        datasets: [{ data: values }]
-      }
-    }
-  )
+amount:
+document.getElementById("amount").value,
 
+user_id:user_id
 
-  pieChart = new Chart(
-    document.getElementById("pieChart"),
-    {
-      type: "pie",
-      data: {
-        labels: labels,
-        datasets: [{ data: values }]
-      }
-    }
-  )
+})
+
+})
+
+.then(()=>load())
 
 }
-
-
-
-function loadMonthly() {
-
-  fetch(API + "/monthly")
-    .then(r => r.json())
-    .then(data => {
-
-      if (monthChart) monthChart.destroy()
-
-      monthChart = new Chart(
-        document.getElementById("monthChart"),
-        {
-          type: "line",
-
-          data: {
-            labels: [
-              "Jan","Feb","Mar","Apr","May","Jun",
-              "Jul","Aug","Sep","Oct","Nov","Dec"
-            ],
-
-            datasets: [{
-              label: "Sales",
-              data: data
-            }]
-          }
-
-        }
-      )
-
-    })
-
-}
-
-
-
-function addSale() {
-
-  fetch(API + "/add-sale", {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      amount:document.getElementById("saleInput").value
-    })
-  })
-
-  .then(() => {
-    loadDashboard()
-    loadMonthly()
-  })
-
-}
-
-
-
-function addPurchase() {
-
-  fetch(API + "/add-purchase", {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      amount:document.getElementById("purchaseInput").value
-    })
-  })
-
-  .then(() => loadDashboard())
-
-}
-
-
-
-function addExpense() {
-
-  fetch(API + "/add-expense", {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      amount:document.getElementById("expenseInput").value
-    })
-  })
-
-  .then(() => loadDashboard())
-
-}
-
-
-
-loadDashboard()
-loadMonthly()
 
 </script>
 

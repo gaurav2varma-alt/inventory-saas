@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+<h2>Login</h2>
+
+<input id="email" placeholder="email">
+<br>
+<input id="password" placeholder="password">
+<br>
+
+<button onclick="login()">Login</button>
+<button onclick="signup()">Signup</button>
+
+<script>
+
+const API =
+"https://inventory-saas-0zns.onrender.com"
+
+function login(){
+
+fetch(API+"/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+email:
+document.getElementById("email").value,
+
+password:
+document.getElementById("password").value
+
+})
+
+})
+
+.then(r=>r.json())
+
+.then(data=>{
+
+localStorage.setItem(
+"user_id",
+data.user.id
+)
+
+window.location="index.html"
+
+})
+
+}
+
+function signup(){
+
+fetch(API+"/signup",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+email:
+document.getElementById("email").value,
+
+password:
+document.getElementById("password").value
+
+})
+
+})
+
+}
+
+</script>
+
+</body>
+</html>
