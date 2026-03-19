@@ -5,6 +5,7 @@
   <title>Inventory Dashboard</title>
 
   <style>
+
     body {
       font-family: Arial;
       background: #0f172a;
@@ -36,7 +37,7 @@
     }
 
     .form {
-      margin-top: 40px;
+      margin-top: 30px;
     }
 
     input {
@@ -50,6 +51,7 @@
       margin-left: 10px;
       cursor: pointer;
     }
+
   </style>
 
 </head>
@@ -86,6 +88,8 @@
 
 
 
+<!-- ADD SALE -->
+
 <div class="form">
 
   <h2>Add Sale</h2>
@@ -98,9 +102,39 @@
 
 
 
+<!-- ADD PURCHASE -->
+
+<div class="form">
+
+  <h2>Add Purchase</h2>
+
+  <input id="purchaseInput" type="number" placeholder="Amount">
+
+  <button onclick="addPurchase()">Add Purchase</button>
+
+</div>
+
+
+
+<!-- ADD EXPENSE -->
+
+<div class="form">
+
+  <h2>Add Expense</h2>
+
+  <input id="expenseInput" type="number" placeholder="Amount">
+
+  <button onclick="addExpense()">Add Expense</button>
+
+</div>
+
+
+
+
 <script>
 
 const API = "https://inventory-saas-0zns.onrender.com"
+
 
 
 function loadDashboard() {
@@ -132,19 +166,75 @@ function addSale() {
       "Content-Type": "application/json"
     },
 
-    body: JSON.stringify({
-      amount: amount
-    })
+    body: JSON.stringify({ amount })
 
   })
 
   .then(res => res.json())
 
-  .then(data => {
-
-    alert("Sale added")
+  .then(() => {
 
     document.getElementById("saleInput").value = ""
+
+    loadDashboard()
+
+  })
+
+}
+
+
+
+function addPurchase() {
+
+  const amount = document.getElementById("purchaseInput").value
+
+  fetch(API + "/add-purchase", {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({ amount })
+
+  })
+
+  .then(res => res.json())
+
+  .then(() => {
+
+    document.getElementById("purchaseInput").value = ""
+
+    loadDashboard()
+
+  })
+
+}
+
+
+
+function addExpense() {
+
+  const amount = document.getElementById("expenseInput").value
+
+  fetch(API + "/add-expense", {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({ amount })
+
+  })
+
+  .then(res => res.json())
+
+  .then(() => {
+
+    document.getElementById("expenseInput").value = ""
 
     loadDashboard()
 
@@ -160,5 +250,4 @@ loadDashboard()
 
 
 </body>
-
 </html>
