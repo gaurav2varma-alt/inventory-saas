@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Inventory Dashboard</title>
+
   <style>
     body {
       font-family: Arial;
@@ -32,14 +34,34 @@
       font-size: 24px;
       margin-top: 10px;
     }
+
+    .form {
+      margin-top: 40px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px;
+      font-size: 16px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
   </style>
+
 </head>
+
 
 <body>
 
 <h1>Inventory Dashboard</h1>
 
+
 <div class="container">
+
   <div class="card">
     <h3>Sales</h3>
     <div class="value" id="sales">0</div>
@@ -59,21 +81,84 @@
     <h3>Profit</h3>
     <div class="value" id="profit">0</div>
   </div>
+
 </div>
 
+
+
+<div class="form">
+
+  <h2>Add Sale</h2>
+
+  <input id="saleInput" type="number" placeholder="Amount">
+
+  <button onclick="addSale()">Add Sale</button>
+
+</div>
+
+
+
 <script>
-  fetch("https://inventory-saas-1.onrender.com/dashboard")
+
+const API = "https://inventory-saas-0zns.onrender.com"
+
+
+function loadDashboard() {
+
+  fetch(API + "/dashboard")
     .then(res => res.json())
     .then(data => {
-      document.getElementById("sales").innerText = data.salesTotal;
-      document.getElementById("purchase").innerText = data.purchaseTotal;
-      document.getElementById("expense").innerText = data.expenseTotal;
-      document.getElementById("profit").innerText = data.profit;
+
+      document.getElementById("sales").innerText = data.salesTotal
+      document.getElementById("purchase").innerText = data.purchaseTotal
+      document.getElementById("expense").innerText = data.expenseTotal
+      document.getElementById("profit").innerText = data.profit
+
     })
-    .catch(err => {
-      console.error("Error:", err);
-    });
+
+}
+
+
+
+function addSale() {
+
+  const amount = document.getElementById("saleInput").value
+
+  fetch(API + "/add-sale", {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      amount: amount
+    })
+
+  })
+
+  .then(res => res.json())
+
+  .then(data => {
+
+    alert("Sale added")
+
+    document.getElementById("saleInput").value = ""
+
+    loadDashboard()
+
+  })
+
+}
+
+
+
+loadDashboard()
+
 </script>
 
+
 </body>
+
 </html>
