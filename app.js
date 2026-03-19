@@ -17,23 +17,58 @@ app.get("/", (req, res) => {
 })
 
 
+// ================= SIGNUP =================
+
+app.post("/signup", async (req, res) => {
+
+  const { email, password } = req.body
+
+  const { data, error } =
+    await supabase.auth.signUp({
+      email,
+      password
+    })
+
+  if (error) return res.status(500).json(error)
+
+  res.json(data)
+
+})
+
+
+// ================= LOGIN =================
+
+app.post("/login", async (req, res) => {
+
+  const { email, password } = req.body
+
+  const { data, error } =
+    await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
+
+  if (error) return res.status(500).json(error)
+
+  res.json(data)
+
+})
+
+
 // ================= DASHBOARD =================
 
 app.get("/dashboard", async (req, res) => {
 
   try {
 
-    const { data: sales } = await supabase
-      .from("sales")
-      .select("amount")
+    const { data: sales } =
+      await supabase.from("sales").select("amount")
 
-    const { data: purchase } = await supabase
-      .from("purchase")
-      .select("amount")
+    const { data: purchase } =
+      await supabase.from("purchase").select("amount")
 
-    const { data: expense } = await supabase
-      .from("expense")
-      .select("amount")
+    const { data: expense } =
+      await supabase.from("expense").select("amount")
 
 
     let salesTotal = 0
@@ -42,25 +77,20 @@ app.get("/dashboard", async (req, res) => {
 
 
     if (sales) {
-      sales.forEach(i => {
-        salesTotal += Number(i.amount)
-      })
+      sales.forEach(i => salesTotal += Number(i.amount))
     }
 
     if (purchase) {
-      purchase.forEach(i => {
-        purchaseTotal += Number(i.amount)
-      })
+      purchase.forEach(i => purchaseTotal += Number(i.amount))
     }
 
     if (expense) {
-      expense.forEach(i => {
-        expenseTotal += Number(i.amount)
-      })
+      expense.forEach(i => expenseTotal += Number(i.amount))
     }
 
 
-    const profit = salesTotal - purchaseTotal - expenseTotal
+    const profit =
+      salesTotal - purchaseTotal - expenseTotal
 
 
     res.json({
@@ -88,9 +118,10 @@ app.post("/add-sale", async (req, res) => {
 
   const { amount } = req.body
 
-  const { error } = await supabase
-    .from("sales")
-    .insert([{ amount }])
+  const { error } =
+    await supabase
+      .from("sales")
+      .insert([{ amount }])
 
   if (error) return res.status(500).json(error)
 
@@ -106,9 +137,10 @@ app.post("/add-purchase", async (req, res) => {
 
   const { amount } = req.body
 
-  const { error } = await supabase
-    .from("purchase")
-    .insert([{ amount }])
+  const { error } =
+    await supabase
+      .from("purchase")
+      .insert([{ amount }])
 
   if (error) return res.status(500).json(error)
 
@@ -124,9 +156,10 @@ app.post("/add-expense", async (req, res) => {
 
   const { amount } = req.body
 
-  const { error } = await supabase
-    .from("expense")
-    .insert([{ amount }])
+  const { error } =
+    await supabase
+      .from("expense")
+      .insert([{ amount }])
 
   if (error) return res.status(500).json(error)
 
@@ -136,17 +169,22 @@ app.post("/add-expense", async (req, res) => {
 
 
 
-// ================= MONTHLY CHART =================
+// ================= MONTHLY =================
 
 app.get("/monthly", async (req, res) => {
 
-  const { data, error } = await supabase
-    .from("sales")
-    .select("amount, created_at")
+  const { data, error } =
+    await supabase
+      .from("sales")
+      .select("amount, created_at")
 
-  if (error) return res.status(500).json(error)
+  if (error)
+    return res.status(500).json(error)
 
-  const months = [0,0,0,0,0,0,0,0,0,0,0,0]
+
+  const months =
+    [0,0,0,0,0,0,0,0,0,0,0,0]
+
 
   data.forEach(row => {
 
@@ -158,6 +196,7 @@ app.get("/monthly", async (req, res) => {
 
   })
 
+
   res.json(months)
 
 })
@@ -166,8 +205,13 @@ app.get("/monthly", async (req, res) => {
 
 // ================= PORT =================
 
-const PORT = process.env.PORT || 5000
+const PORT =
+  process.env.PORT || 5000
 
 app.listen(PORT, () => {
-  console.log("Server running on port " + PORT)
+
+  console.log(
+    "Server running on " + PORT
+  )
+
 })
