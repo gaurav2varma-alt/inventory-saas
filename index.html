@@ -1,13 +1,246 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Dashboard</title>
+
+<style>
+
+body{
+background:#0b1a33;
+color:white;
+font-family:Arial;
+text-align:center;
+}
+
+.card{
+display:inline-block;
+background:#1c2c4a;
+padding:20px;
+margin:10px;
+border-radius:10px;
+width:150px;
+}
+
+input{
+padding:10px;
+margin:5px;
+}
+
+button{
+padding:10px;
+margin:5px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+
 <script>
 
-const id =
+const user_id =
 localStorage.getItem("user_id")
 
-if(!id){
+if(!user_id){
 
-window.location.href =
-"https://inventory-saas-0zns.onrender.com/login.html"
+window.location = "login.html"
 
 }
 
 </script>
+
+
+
+<h1>Dashboard</h1>
+
+<button onclick="logout()">Logout</button>
+
+
+
+<div class="card">
+Sales
+<h2 id="sales">0</h2>
+</div>
+
+
+<div class="card">
+Purchase
+<h2 id="purchase">0</h2>
+</div>
+
+
+<div class="card">
+Expense
+<h2 id="expense">0</h2>
+</div>
+
+
+<div class="card">
+Profit
+<h2 id="profit">0</h2>
+</div>
+
+
+
+<h2>Add Sale</h2>
+
+<input id="saleAmount">
+<button onclick="addSale()">Add Sale</button>
+
+
+
+<h2>Add Purchase</h2>
+
+<input id="purchaseAmount">
+<button onclick="addPurchase()">Add Purchase</button>
+
+
+
+<h2>Add Expense</h2>
+
+<input id="expenseAmount">
+<button onclick="addExpense()">Add Expense</button>
+
+
+
+
+<script>
+
+const API =
+"https://inventory-saas-0zns.onrender.com"
+
+
+
+function load(){
+
+fetch(
+API +
+"/dashboard?user_id=" +
+user_id
+)
+
+.then(r => r.json())
+
+.then(d => {
+
+document.getElementById("sales").innerText =
+d.salesTotal
+
+document.getElementById("purchase").innerText =
+d.purchaseTotal
+
+document.getElementById("expense").innerText =
+d.expenseTotal
+
+document.getElementById("profit").innerText =
+d.profit
+
+})
+
+}
+
+
+load()
+
+
+
+function addSale(){
+
+fetch(API + "/add-sale", {
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+amount:
+document.getElementById("saleAmount").value,
+
+user_id:user_id
+
+})
+
+})
+
+.then(() => load())
+
+}
+
+
+
+function addPurchase(){
+
+fetch(API + "/add-purchase", {
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+amount:
+document.getElementById("purchaseAmount").value,
+
+user_id:user_id
+
+})
+
+})
+
+.then(() => load())
+
+}
+
+
+
+function addExpense(){
+
+fetch(API + "/add-expense", {
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+amount:
+document.getElementById("expenseAmount").value,
+
+user_id:user_id
+
+})
+
+})
+
+.then(() => load())
+
+}
+
+
+
+function logout(){
+
+localStorage.removeItem("user_id")
+
+window.location = "login.html"
+
+}
+
+
+</script>
+
+
+</body>
+</html>
